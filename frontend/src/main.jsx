@@ -4,7 +4,7 @@ import App from './App.jsx'
 import './index.css'
 import {RouterProvider, createBrowserRouter} from 'react-router-dom'
 import Dashboard from './Pages/Dashboard.jsx'
-// import About from './Pages/About.jsx'
+import About from './Pages/About.jsx'
 
 const router = createBrowserRouter([
   // {
@@ -14,13 +14,13 @@ const router = createBrowserRouter([
     element: <App/>,
     children:[
       {
-        path:"/",
+        path:"/home",
         element: <Dashboard/>
       },
-      // {
-      //   path:"/about",
-      //   element: <About/>
-      // }
+      {
+        path:"/about",
+        element: <About/>
+      }
     ]
   }
 ])

@@ -1,0 +1,17 @@
+CREATE DATABASE IF NOT EXISTS ferrari;
+USE ferrari;
+
+CREATE TABLE IF NOT EXISTS cars (
+    id_mobil INT AUTO_INCREMENT PRIMARY KEY,
+    nama_mobil VARCHAR(255) NOT NULL,
+    model VARCHAR(100) NOT NULL,
+    tahun INT NOT NULL,
+    deskripsi TEXT
+);
+
+CREATE TABLE IF NOT EXISTS users (
+    id_user INT AUTO_INCREMENT PRIMARY KEY,
+    nama_pengguna VARCHAR(100) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    PASSWORD VARCHAR(255) NOT NULL
+);
