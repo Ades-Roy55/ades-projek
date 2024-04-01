@@ -26,91 +26,95 @@ pool.getConnection()
         console.error('Failed to connect to database:', err);
     });
 
-app.post('/api/v1/register', (req, res) => {
-  const { nama_pengguna, email, password } = req.body;
-  pool.getConnection()
-          .then(conn => {
-              conn.query('SELECT * FROM users WHERE email = ?', [email])
-                  .then(result => {
-                      conn.release(); // Mengembalikan koneksi ke pool
-  
-                      // Jika email sudah terdaftar, kirim pesan error
-                      if (result.length > 0) {
-                          res.status(400).json({ error: 'Email sudah terdaftar' });
-                      } else {
-                          // Jika email belum terdaftar, lanjutkan proses registrasi
-                          bcrypt.genSalt(10, (err, salt) => {
-                              if (err) {
-                                  res.status(500).json({ error: 'Server error' });
-                              } else {
-                                  bcrypt.hash(password, salt, (err, hash) => {
-                                      if (err) {
-                                          res.status(500).json({ error: 'Server error' });
-                                      } else {
-                                          const hashedPassword = hash;
-                                          pool.getConnection()
-                                              .then(conn => {
-                                                  conn.query('INSERT INTO users (nama_pengguna, email, password) VALUES (?, ?, ?)', [nama_pengguna, email, hashedPassword])
-                                                      .then(result => {
-                                                          res.status(200).json({ message: 'Registrasi berhasil' });
-                                                          conn.release(); // Mengembalikan koneksi ke pool
-                                                      })
-                                                      .catch(err => {
-                                                          res.status(500).json({ error: 'Gagal mendaftar, email sudah digunakan' });
-                                                          conn.release(); // Mengembalikan koneksi ke pool
-                                                      });
-                                              })
-                                              .catch(err => {
-                                                  res.status(500).json({ error: 'Server error' });
-                                              });
-                                      }
-                                  });
-                              }
-                          });
-                      }
-                  })
-                  .catch(err => {
-                      res.status(500).json({ error: 'Server error' });
-                  });
-          })
-          .catch(err => {
-              res.status(500).json({ error: 'Server error' });
-          });
-  });
-  
-  
-  app.post('/api/v1/login', (req, res) => {
-      const { email, password } = req.body;
-      pool.getConnection()
-          .then(conn => {
-              conn.query('SELECT * FROM users WHERE email = ?', [email])
-                  .then(result => {
-                      conn.release(); // mengembalikan koneksi ke pool
-                      if (result.length === 0) {
-                          res.status(404).json({ error: 'Email tidak ditemukan' });
-                      } else {
-                          bcrypt.compare(password, result[0].password, (err, isMatch) => {
-                              if (err) {
-                                  res.status(500).json({ error: 'Server error' });
-                              } else {
-                                  if (isMatch) {
-                                      const token = jwt.sign({ id: result[0].id_user }, 'rahasia');
-                                      res.status(200).json({ message: 'Berhasil login' }); // Pesan berhasil login
-                                  } else {
-                                      res.status(401).json({ error: 'Password salah' });
-                                  }
-                              }
-                          });
-                      }
-                  })
-                  .catch(err => {
-                      res.status(500).json({ error: 'Server error' });
-                  });
-          })
-          .catch(err => {
-              res.status(500).json({ error: 'Server error' });
-          });
-  });
+    app.post('/api/v1/register', (req, res) => {
+        const { nama_pengguna, email, password } = req.body;
+        bcrypt.genSalt(10, (err, salt) => {
+            if (err) {
+                res.status(500).json({ error: 'Server error' });
+            } else {
+                bcrypt.hash(password, salt, (err, hash) => {
+                    if (err) {
+                        res.status(500).json({ error: 'Server error' });
+                    } else {
+                        const hashedPassword = hash;
+                        pool.getConnection()
+                            .then(conn => {
+                                conn.query('INSERT INTO users (nama_pengguna, email, password) VALUES (?, ?, ?)', [nama_pengguna, email, hashedPassword])
+                                    .then(result => {
+                                        res.status(200).json({ message: 'Registrasi berhasil' }); // Pesan berhasil mendaftar
+                                        conn.release(); // mengembalikan koneksi ke pool
+                                    })
+                                    .catch(err => {
+                                        res.status(500).json({ error: 'Gagal mendaftar, email sudah digunakan' });
+                                        conn.release(); // mengembalikan koneksi ke pool
+                                    });
+                            })
+                            .catch(err => {
+                                res.status(500).json({ error: 'Server error' });
+                            });
+                    }
+                });
+            }
+        });
+    });
+    
+    app.post('/api/v1/login', (req, res) => {
+        const { email, password } = req.body;
+        pool.getConnection()
+            .then(conn => {
+                conn.query('SELECT * FROM users WHERE email = ?', [email])
+                    .then(result => {
+                        conn.release(); // mengembalikan koneksi ke pool
+                        if (result.length === 0) {
+                            res.status(404).json({ error: 'Email tidak ditemukan' });
+                        } else {
+                            bcrypt.compare(password, result[0].password, (err, isMatch) => {
+                                if (err) {
+                                    res.status(500).json({ error: 'Server error' });
+                                } else {
+                                    if (isMatch) {
+                                        const token = jwt.sign({ id: result[0].id_user }, 'rahasia');
+                                        res.status(200).json({ message: 'Berhasil login' }); // Pesan berhasil login
+                                    } else {
+                                        res.status(401).json({ error: 'Password salah' });
+                                    }
+                                }
+                            });
+                        }
+                    })
+                    .catch(err => {
+                        res.status(500).json({ error: 'Server error' });
+                    });
+            })
+            .catch(err => {
+                res.status(500).json({ error: 'Server error' });
+            });
+    });
+
+    app.get('/api/v1/profile', (req, res) => {
+        // Get user data from the database
+        pool.getConnection()
+            .then(conn => {
+                conn.query('SELECT * FROM users')
+                    .then(users => {
+                        conn.release(); // Release connection back to the pool
+                        res.json(users); // Send user data as JSON response
+                    })
+                    .catch(err => {
+                        conn.release(); // Release connection back to the pool
+                        console.error('Error querying users:', err);
+                        res.status(500).json({ error: 'Server error' });
+                    });
+            })
+            .catch(err => {
+                console.error('Error getting database connection:', err);
+                res.status(500).json({ error: 'Server error' });
+            });
+    });
+    
+    
+    
+    
 // Middleware untuk verifikasi token
 function verifyToken(req, res, next) {
     const token = req.headers['authorization'];

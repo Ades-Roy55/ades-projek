@@ -5,21 +5,28 @@ import './index.css'
 import {RouterProvider, createBrowserRouter} from 'react-router-dom'
 import Dashboard from './Pages/Dashboard.jsx'
 import About from './Pages/About.jsx'
+import Profile from './Pages/Profile.jsx'
+import Catalog from './Pages/Catalog.jsx'
 
 const router = createBrowserRouter([
-  // {
-  //   path:"/"
-  // },
   {
     element: <App/>,
     children:[
       {
-        path:"/home",
+        path:"/",
         element: <Dashboard/>
       },
       {
         path:"/about",
         element: <About/>
+      },
+      {
+        path:"/profile",
+        element: <Profile/>
+      },
+      {
+        path:"/catalog",
+        element: <Catalog/>
       }
     ]
   }
