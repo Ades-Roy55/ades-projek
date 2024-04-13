@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { WalletCards, CircleUser, Info, Home, Menu, Heart} from "lucide-react";
+import { WalletCards, CircleUser, Info, Home, Menu,} from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { LogOut } from "lucide-react";
 
@@ -29,7 +29,7 @@ const Header = () => {
           </div>
           <nav className="lg:flex lg:gap-10 hidden right-0 lg:block">
             <NavLink
-              to="/"
+              to="/dashboard"
               className="text-white flex items-center mr-4"
               activeClassName="font-bold"
             >
@@ -52,14 +52,7 @@ const Header = () => {
               <WalletCards className="mr-1 inline-block" />
               <span className="inline-block">Catalog</span>
             </NavLink>
-            <NavLink
-              to="/favorites" 
-              className="text-white flex items-center mr-4"
-              activeClassName="font-bold"
-            >
-              <Heart className="mr-1 inline-block" /> 
-              <span className="inline-block">Favorites</span>
-            </NavLink>
+            
             <NavLink
               to="/profile"
               className="text-white flex items-center"

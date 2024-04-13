@@ -5,9 +5,23 @@ import { NavLink } from "react-router-dom";
 
 const Profile = () => {
   const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.get("/user/my-account").then((res) => setUserData(res.data));
+    // Fungsi untuk mengambil data pengguna dari server
+    const fetchUserData = async () => {
+      try {
+        const response = await api.get("/user/my-account");
+        setUserData(response.data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        setLoading(false);
+      }
+    };
+
+    // Panggil fungsi untuk mengambil data pengguna saat komponen dimuat
+    fetchUserData();
   }, []);
 
   // Function to handle edit action
@@ -68,17 +82,23 @@ const Profile = () => {
           />
         </div>
         <h2 className="text-2xl font-semibold mb-4">Profil Pengguna</h2>
-        {userData ? (
-          <div>
-            <p>
-              <strong>Nama Pengguna:</strong> {userData.nama_pengguna}
-            </p>
-            <p>
-              <strong>Email:</strong> {userData.email}
-            </p>
-          </div>
-        ) : (
+        {loading ? (
           <p>Loading...</p>
+        ) : (
+          <div>
+            {userData ? (
+              <div>
+                <p>
+                  <strong>Nama Pengguna:</strong> {userData.nusername}
+                </p>
+                <p>
+                  <strong>Email:</strong> {userData.email}
+                </p>
+              </div>
+            ) : (
+              <p>Tidak ada data pengguna yang ditemukan.</p>
+            )}
+          </div>
         )}
         <div className="mt-4">
           <div className="flex space-x-4">
