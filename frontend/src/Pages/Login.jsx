@@ -1,26 +1,34 @@
-import  { useState } from "react";
-import { NavLink } from "react-router-dom";
+/* eslint-disable no-unused-vars */
+import { useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+import { api } from "../utils";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
+ 
+  const navigate = useNavigate();
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    if (email === "" || password === "") {
-      setError("Please enter your email and password.");
-      return;
-    }
-    window.location.href = "/dashboard";
+    api.post("/user/login", { email, password }).then((res) => {
+      if (!res.token) {
+        alert(res.msg);
+      } else {
+        alert(res.msg);
+        navigate("/dashboard");
+      }
+    });
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-red-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <h1 className="text-center text-3xl font-extrabold text-gray-900">Sign In</h1>
+          <h1 className="text-center text-3xl font-extrabold text-gray-900">
+            Sign In
+          </h1>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm -space-y-px">
@@ -56,13 +64,19 @@ const Login = () => {
                 type="checkbox"
                 className="h-4 w-4 text-red-600 focus:ring-red-500 border-red-300 rounded"
               />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-red-900">
+              <label
+                htmlFor="remember-me"
+                className="ml-2 block text-sm text-red-900"
+              >
                 Remember me
               </label>
             </div>
 
             <div className="text-sm">
-              <NavLink to="/signup" className="font-medium text-red-600 hover:text-red-500">
+              <NavLink
+                to="/"
+                className="font-medium text-red-600 hover:text-red-500"
+              >
                 Forgot your password?
               </NavLink>
             </div>

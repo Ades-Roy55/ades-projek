@@ -6,9 +6,13 @@ import { NavLink } from "react-router-dom";
 const Profile = () => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [editData, setEditData] = useState({
+    username: "",
+    email: "",
+  });
+  const [showEditModal, setShowEditModal] = useState(false);
 
   useEffect(() => {
-    // Fungsi untuk mengambil data pengguna dari server
     const fetchUserData = async () => {
       try {
         const response = await api.get("/user/my-account");
@@ -20,50 +24,67 @@ const Profile = () => {
       }
     };
 
-    // Panggil fungsi untuk mengambil data pengguna saat komponen dimuat
     fetchUserData();
   }, []);
 
-  // Function to handle edit action
+  
+
   const handleEdit = () => {
-    console.log("Edit action");
+    setEditData({
+      username: userData.username,
+      email: userData.email,
+    });
+    setShowEditModal(true);
+  };
+  
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditData({
+      ...editData,
+      [name]: value,
+    });
   };
 
-  // Function to handle logout action
-  const handleLogout = () => {
-    // Display confirmation dialog
-    const confirmLogout = window.confirm(
-      "Apakah Anda yakin ingin logout?"
-    );
-    if (confirmLogout) {
-      localStorage.removeItem("userData");
-      // Redirect to login page
-      history.push("/login");
+  const handleSubmitEdit = async () => {
+    try {
+      const response = await api.put("/user/my-account", editData);
+      if (response.status === 200) {
+        setUserData(response.data);
+        setShowEditModal(false);
+      } else {
+        console.error("Gagal menyimpan perubahan.");
+      }
+    } catch (error) {
+      console.error("Error updating user data:", error);
     }
   };
+  
+  
 
-  // Function to handle delete action
-  const handleDelete = () => {
-    // Display confirmation dialog
+  const handleCancelEdit = () => {
+    setShowEditModal(false);
+  };
+
+  const handleDelete = async () => {
     const confirmDelete = window.confirm(
       "Anda yakin ingin menghapus akun ini?"
     );
     if (confirmDelete) {
-      // Send delete request to backend
-      api.delete("/user/my-account")
-        .then((response) => {
-          if (response.status === 200) {
-            // Logout user
-            handleLogout();
-          } else {
-            console.error("Gagal menghapus akun");
-          }
-        })
-        .catch((error) => {
-          console.error("Error deleting user account:", error);
-        });
+      try {
+        const response = await api.delete(`/user/${userData.id}`);
+        if (response.status === 200) {
+          localStorage.removeItem("userData");
+          window.location.href = "/login";
+        } else {
+          console.error("Gagal menghapus akun");
+        }
+      } catch (error) {
+        console.error("Error deleting user account:", error);
+      }
     }
   };
+  
+  
 
   return (
     <div className="relative bg-gray-100 min-h-screen flex items-center justify-center">
@@ -74,7 +95,6 @@ const Profile = () => {
       />
       <div className="z-10 bg-white bg-opacity-75 p-8 rounded-lg shadow-md flex flex-col items-center">
         <div className="w-32 h-32 rounded-full bg-gray-200 flex items-center justify-center mb-4">
-          {/* Display user image here */}
           <img
             className="w-28 h-28 rounded-full"
             src="/image/carlos.jpg"
@@ -89,7 +109,7 @@ const Profile = () => {
             {userData ? (
               <div>
                 <p>
-                  <strong>Nama Pengguna:</strong> {userData.nusername}
+                  <strong>Nama Pengguna:</strong> {userData.username}
                 </p>
                 <p>
                   <strong>Email:</strong> {userData.email}
@@ -108,19 +128,67 @@ const Profile = () => {
             >
               <Pencil className="h-4 w-4 mr-2" /> Edit
             </button>
-            <button
-              className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded flex items-center"
-              onClick={handleDelete}
+            <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded flex items-center"
+                    onClick={handleDelete}
             >
-              <Trash className="h-4 w-4 mr-2" /> Hapus
+                <Trash className="h-4 w-4 mr-2" /> Hapus
             </button>
+
           </div>
           <div className="flex justify-center mt-4">
-            <NavLink to='/login'>
-              <LogOut className="h-4 w-4 mr-2" /> 
+            <NavLink to="/login">
+              <LogOut className="h-4 w-4 mr-2" />
             </NavLink>
           </div>
         </div>
+        {showEditModal && (
+          <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+            <div className="bg-white p-8 rounded-lg shadow-md">
+              <h3 className="text-xl font-semibold mb-4">Edit Profil</h3>
+              <form onSubmit={handleSubmitEdit}>
+                <div className="mb-4">
+                  <label className="block text-gray-700 font-bold mb-2">
+                    Nama Pengguna
+                  </label>
+                  <input
+                    type="text"
+                    name="username"
+                    value={editData.username}
+                    onChange={handleInputChange}
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-gray-700 font-bold mb-2">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={editData.email}
+                    onChange={handleInputChange}
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  />
+                </div>
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={handleCancelEdit}
+                    className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mr-2"
+                  >
+                    Batal
+                  </button>
+                  <button
+                    type="submit"
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                  >
+                    Simpan
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

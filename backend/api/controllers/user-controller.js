@@ -11,7 +11,10 @@ export const register = async (req, res) => {
       [username, email, hash]
     );
     // console.log(req.body);
-    res.status(201).send(result.rows[0]);
+    res.status(201).json({
+      msg: "Akun berhasil terdaftar",
+      data: result.rows[0],
+    });
   } catch (error) {
     res.status(500).json({ error });
   }
@@ -33,12 +36,12 @@ export const login = async (req, res) => {
         res.cookie("token", token, {
           httpOnly: true,
         });
-        res.status(200).send("Berhasil Login");
+        res.status(200).json({ msg: "Berhasil Login", token });
       } else {
-        res.status(401).send("password salah");
+        res.status(401).json({ msg: "password salah" });
       }
     } else {
-      return res.status(404).send("Email tidak ditemukan");
+      return res.status(404).json({ msg: "Email tidak ditemukan" });
     }
   } catch (error) {
     res.status(500).json({ error });
@@ -47,13 +50,45 @@ export const login = async (req, res) => {
 
 export const userIsLogin = async (req, res) => {
   try {
-    return res.json({
-      status: "Berhasil",
-      msg: `${req.user.username} sedang login`,
-      data: req.user,
-    });
+    const userId = req.user.id; // Mengambil ID pengguna dari token
+    const result = await pool.query("SELECT * FROM users WHERE id = $1", [
+      userId,
+    ]);
+    if (result.rows.length > 0) {
+      return res.json({
+        status: "Berhasil",
+        msg: `${result.rows[0].username} sedang login`,
+        data: result.rows[0],
+      });
+    } else {
+      return res.status(404).json({ msg: "Pengguna tidak ditemukan" });
+    }
   } catch (error) {
     console.log(error);
+    res.status(500).json({ error });
+  }
+};
+
+
+export const getAllUser = async (_req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM users");
+    res.status(200).json({ data: result.rows });
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+};
+
+export const deleteUser = async (req, res) => {
+  const userId = req.params.id;
+  try {
+    const result = await pool.query("DELETE FROM users WHERE id = $1", [userId]);
+    if (result.rowCount > 0) {
+      res.status(200).json({ msg: "Pengguna berhasil dihapus" });
+    } else {
+      res.status(404).json({ msg: "Pengguna tidak ditemukan" });
+    }
+  } catch (error) {
     res.status(500).json({ error });
   }
 };

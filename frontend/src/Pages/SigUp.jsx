@@ -1,5 +1,7 @@
-import  { useState } from "react";
-import { NavLink } from "react-router-dom";
+/* eslint-disable no-unused-vars */
+import { useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+import { api } from "../utils";
 
 const SignUp = () => {
   const [username, setUsername] = useState("");
@@ -7,26 +9,23 @@ const SignUp = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
+  
+  const navigate = useNavigate();
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    // Lakukan validasi di sini
-    if (username === "" || email === "" || password === "") {
-      setError("Please fill in all fields.");
-      return;
-    }
-
-    // Lakukan proses pendaftaran di sini
-
-    // Contoh sederhana: Redirect ke halaman login setelah pendaftaran berhasil
-    window.location.href = "/login";
+    api.post("/user/register", { username, email, password }).then((res) => {
+      alert(res.msg);
+      navigate("/login");
+    });
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-red-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <h1 className="text-center text-3xl font-extrabold text-red-900">Sign Up</h1>
+          <h1 className="text-center text-3xl font-extrabold text-red-900">
+            Sign Up
+          </h1>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm -space-y-px">
@@ -68,7 +67,12 @@ const SignUp = () => {
             <div className="text-sm">
               <p className="text-red-700">
                 Already have an account?
-                <NavLink to="/login" className="font-medium text-red-600 hover:text-red-500 ml-1">Sign In</NavLink>
+                <NavLink
+                  to="/login"
+                  className="font-medium text-red-600 hover:text-red-500 ml-1"
+                >
+                  Sign In
+                </NavLink>
               </p>
             </div>
           </div>

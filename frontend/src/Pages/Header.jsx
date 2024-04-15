@@ -69,7 +69,7 @@ const Header = () => {
             <div className="absolute top-full right-0 mt-2 w-48 bg-red-700 rounded-lg shadow-lg">
               <nav className="flex flex-col p-4 gap-8">
                 <NavLink
-                  to="/"
+                  to="/dashboard"
                   className="text-white flex items-center"
                   activeClassName="font-bold"
                 >
