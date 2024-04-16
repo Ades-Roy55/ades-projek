@@ -1,9 +1,11 @@
-import { useState, useEffect } from "react";
+import  { useState, useEffect } from "react";
 import { api } from "../utils";
 import { Trash, Pencil, LogOut } from "lucide-react";
-import { NavLink } from "react-router-dom";
+import { NavLink,} from "react-router-dom";
 
 const Profile = () => {
+  // const history = useHistory();
+
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [editData, setEditData] = useState({
@@ -11,6 +13,7 @@ const Profile = () => {
     email: "",
   });
   const [showEditModal, setShowEditModal] = useState(false);
+  const [editError, setEditError] = useState(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -27,8 +30,6 @@ const Profile = () => {
     fetchUserData();
   }, []);
 
-  
-
   const handleEdit = () => {
     setEditData({
       username: userData.username,
@@ -36,7 +37,7 @@ const Profile = () => {
     });
     setShowEditModal(true);
   };
-  
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setEditData({
@@ -47,22 +48,25 @@ const Profile = () => {
 
   const handleSubmitEdit = async () => {
     try {
-      const response = await api.put("/user/my-account", editData);
+      const response = await api.put("/user/edit-user", editData);
       if (response.status === 200) {
         setUserData(response.data);
         setShowEditModal(false);
       } else {
-        console.error("Gagal menyimpan perubahan.");
+        console.error("Terjadi kesalahan saat menyimpan perubahan.");
       }
     } catch (error) {
-      console.error("Error updating user data:", error);
+      if (error.response && error.response.data) {
+        setEditError(error.response.data.error);
+      } else {
+        console.error("Error updating user data:", error);
+      }
     }
   };
-  
-  
 
   const handleCancelEdit = () => {
     setShowEditModal(false);
+    setEditError(null);
   };
 
   const handleDelete = async () => {
@@ -74,22 +78,23 @@ const Profile = () => {
         const response = await api.delete(`/user/${userData.id}`);
         if (response.status === 200) {
           localStorage.removeItem("userData");
-          window.location.href = "/login";
+          alert("Akun berhasil dihapus.");
+          history.push("/login");
         } else {
           console.error("Gagal menghapus akun");
+          alert("Terjadi kesalahan saat menghapus akun.");
         }
       } catch (error) {
         console.error("Error deleting user account:", error);
+        alert("Terjadi kesalahan saat menghapus akun.");
       }
     }
   };
-  
-  
 
   return (
     <div className="relative bg-gray-100 min-h-screen flex items-center justify-center">
       <img
-        src="/image/bg.jpg"
+        src="/public/image/bg.jpg"
         alt="bg"
         className="absolute inset-0 object-cover w-full h-full z-0"
       />
@@ -109,7 +114,7 @@ const Profile = () => {
             {userData ? (
               <div>
                 <p>
-                  <strong>Nama Pengguna:</strong> {userData.username}
+                  <strong>Username:</strong> {userData.username}
                 </p>
                 <p>
                   <strong>Email:</strong> {userData.email}
@@ -128,12 +133,12 @@ const Profile = () => {
             >
               <Pencil className="h-4 w-4 mr-2" /> Edit
             </button>
-            <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded flex items-center"
-                    onClick={handleDelete}
+            <button
+              className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded flex items-center"
+              onClick={handleDelete}
             >
-                <Trash className="h-4 w-4 mr-2" /> Hapus
+              <Trash className="h-4 w-4 mr-2" /> Hapus
             </button>
-
           </div>
           <div className="flex justify-center mt-4">
             <NavLink to="/login">
@@ -145,6 +150,7 @@ const Profile = () => {
           <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
             <div className="bg-white p-8 rounded-lg shadow-md">
               <h3 className="text-xl font-semibold mb-4">Edit Profil</h3>
+              {editError && <p className="text-red-500 mb-4">{editError}</p>}
               <form onSubmit={handleSubmitEdit}>
                 <div className="mb-4">
                   <label className="block text-gray-700 font-bold mb-2">

@@ -11,6 +11,9 @@ const Catalog = () => {
   const [showFavorites, setShowFavorites] = useState(false);
 
   useEffect(() => {
+    const storedFavorites = JSON.parse(localStorage.getItem("favorites")) || [];
+    setFavorites(storedFavorites);
+
     api.get("/car/get-all").then((res) => {
       setCars(res);
       setSearchResults(res);
@@ -36,10 +39,16 @@ const Catalog = () => {
   };
 
   const handleFavorite = (car) => {
-    if (!favorites.find((fav) => fav.id === car.id)) {
-      setFavorites([...favorites, car]);
+    // Jika mobil sudah difavoritkan, hapus dari daftar favorit
+    if (isFavorite(car)) {
+      const updatedFavorites = favorites.filter((fav) => fav.id !== car.id);
+      setFavorites(updatedFavorites);
+      localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
     } else {
-      setFavorites(favorites.filter((fav) => fav.id !== car.id));
+      // Jika mobil belum difavoritkan, tambahkan ke daftar favorit
+      const updatedFavorites = [...favorites, car];
+      setFavorites(updatedFavorites);
+      localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
     }
   };
 
@@ -71,7 +80,7 @@ const Catalog = () => {
         </div>
         {searchResults.map((c) => (
           <div key={c.id} className="border rounded-lg p-2 flex flex-col items-center relative">
-            <img src={c.image} alt="" className="w-56 h-40 object-cover mb-2 overflow-hidden rounded-md" />
+            <img src={c.image} alt="" className="w-56 h-40 object-cover mb-2 overflow-hidden rounded-md transform hover:scale-105 transition duration-300 ease-in-out"/>
             <h1 className="text-center">{c.merk}</h1>
             <h1 className="text-center">{c.tahun_rilis}</h1>
             <div className="flex justify-around mt-2 w-full">
@@ -93,9 +102,9 @@ const Catalog = () => {
               <img src={selectedCar.image} alt="" className="w-64 h-48 object-cover overflow-hidden rounded-md" />
             </div>
             <h1 className="text-center">{selectedCar.merk}</h1>
-            <h1 className="text-center">{selectedCar.tahun_rilis}</h1>
+            <h1 className="text-center">Tahun Rilis {selectedCar.tahun_rilis}</h1>
             <p className="text-center">{selectedCar.description}</p>
-            <button className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={closePopup}>Close</button>
+            <button className="mt-4 bg-red-600 hover:bg-red-800 text-white font-bold py-2 px-4 rounded" onClick={closePopup}>Close</button>
           </div>
         </div>
       )}

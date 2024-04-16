@@ -50,19 +50,11 @@ export const login = async (req, res) => {
 
 export const userIsLogin = async (req, res) => {
   try {
-    const userId = req.user.id; // Mengambil ID pengguna dari token
-    const result = await pool.query("SELECT * FROM users WHERE id = $1", [
-      userId,
-    ]);
-    if (result.rows.length > 0) {
-      return res.json({
-        status: "Berhasil",
-        msg: `${result.rows[0].username} sedang login`,
-        data: result.rows[0],
-      });
-    } else {
-      return res.status(404).json({ msg: "Pengguna tidak ditemukan" });
-    }
+    return res.json({
+      status: "Berhasil",
+      msg: `${req.user.username} sedang login`,
+      data: req.user,
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error });
@@ -79,6 +71,32 @@ export const getAllUser = async (_req, res) => {
   }
 };
 
+export const editUser = async (req, res) => {
+  const userId = req.params.userId;
+  const updatedUserData = req.body;
+
+  try {
+    // Temukan pengguna berdasarkan ID
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'Pengguna tidak ditemukan' });
+    }
+
+    // Perbarui data pengguna
+    user.username = updatedUserData.username;
+    user.email = updatedUserData.email;
+    
+    // Simpan perubahan
+    await user.save();
+
+    res.status(200).json({ message: 'Data pengguna berhasil diperbarui', user });
+  } catch (error) {
+    console.error('Gagal mengedit data pengguna:', error);
+    res.status(500).json({ error: 'Terjadi kesalahan saat mengedit data pengguna' });
+  }
+};
+
+
 export const deleteUser = async (req, res) => {
   const userId = req.params.id;
   try {
@@ -91,4 +109,10 @@ export const deleteUser = async (req, res) => {
   } catch (error) {
     res.status(500).json({ error });
   }
+};
+
+export const logoutAccount = async (_req, res) => {
+  res.setHeader("Cache-Control", "no-store");
+  res.clearCookie("token");
+  res.status(200).json({ msg: "Logout berhasil" });
 };

@@ -14,7 +14,7 @@ import {
 
 const router = express.Router();
 
-router.get("/get-all", getAllCars);
+router.get("/get-all",middleware, getAllCars);
 router.post("/add-car", middleware, addCars);
 router.put("/update-car/:id", middleware, updateCars);
 router.delete("/delete-car/:id", middleware, deleteCars);
