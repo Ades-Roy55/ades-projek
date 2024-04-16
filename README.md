@@ -1,11 +1,19 @@
-Selamat datang di Halaman "Tentang Ferrari"!
+# Ferrari Cars Catalog
 
-Kami dengan bangga mempersembahkan kepada Anda katalog eksklusif kami yang mengagumkan, menampilkan berbagai model Ferrari yang legendaris. Dari kecepatan yang memukau hingga desain yang ikonik, Ferrari tidak hanya sebuah mobil, tetapi juga sebuah gaya hidup yang mencerminkan keunggulan dan presisi Italia.
+Katalog Ferrari adalah sebuah koleksi atau daftar mobil-mobil yang diproduksi oleh produsen mobil mewah Italia, Ferrari. Ini biasanya berisi informasi lengkap tentang berbagai model mobil Ferrari yang tersedia, termasuk spesifikasi teknis, fitur-fitur khusus, gambar-gambar mobil, dan deskripsi singkat
 
-Di sini, Anda akan menemukan gambaran menyeluruh tentang warisan dan inovasi Ferrari, mulai dari mobil balap legendaris hingga supercar modern yang revolusioner. Setiap model kami dirancang dengan keahlian yang tak tertandingi dan ditenagai oleh teknologi canggih yang menghasilkan performa tanpa kompromi.
+## Fitur
+- Pendaftaran & Verifikasi
+- Profile Akun
+- Daftar Mobil
+- Favorite Cars
 
-Lewati pintu gerbang dunia Ferrari dan biarkan diri Anda terpesona oleh keindahan desain, kekuatan mesin, dan semangat balap yang melekat pada setiap kendaraan. Jelajahi katalog kami, rasakan kecepatan dalam setiap gambar, dan temukan cerita di balik setiap mobil yang membentuk sejarah legendaris Ferrari.
+## Diagram ER
 
-Bergabunglah dengan kami dalam perjalanan mengagumkan ini melalui dunia Ferrari, di mana impian menjadi kenyataan dan kecepatan menjadi gaya hidup.
 
-Selamat menikmati!
+## Tech Stack
+- FrontEnd : Reat.js & Taillwind
+- BackEnd : Node.js & Express.js
+- DB : PostgreSQL
+- Devops : -
+- Repo : https://github.com/Ades-Roy55/ades-projek.git
