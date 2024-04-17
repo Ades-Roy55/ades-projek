@@ -16,6 +16,6 @@ Katalog Ferrari adalah sebuah koleksi atau daftar mobil-mobil yang diproduksi ol
 ## Tech Stack
 - FrontEnd : Reat.js & Taillwind
 - BackEnd : Node.js & Express.js
-- DB : PostgreSQL
+- DB : PostgreSQL/supabase
 - Devops : -
 - Repo : https://github.com/Ades-Roy55/ades-projek.git
