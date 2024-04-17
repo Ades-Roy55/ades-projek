@@ -1,19 +1,11 @@
-import  { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { api } from "../utils";
-import { Trash, Pencil, LogOut } from "lucide-react";
-import { NavLink,} from "react-router-dom";
+import { Trash, LogOut } from "lucide-react";
+import { NavLink } from "react-router-dom";
 
 const Profile = () => {
-  // const history = useHistory();
-
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [editData, setEditData] = useState({
-    username: "",
-    email: "",
-  });
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [editError, setEditError] = useState(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -30,45 +22,6 @@ const Profile = () => {
     fetchUserData();
   }, []);
 
-  const handleEdit = () => {
-    setEditData({
-      username: userData.username,
-      email: userData.email,
-    });
-    setShowEditModal(true);
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setEditData({
-      ...editData,
-      [name]: value,
-    });
-  };
-
-  const handleSubmitEdit = async () => {
-    try {
-      const response = await api.put("/user/edit-user", editData);
-      if (response.status === 200) {
-        setUserData(response.data);
-        setShowEditModal(false);
-      } else {
-        console.error("Terjadi kesalahan saat menyimpan perubahan.");
-      }
-    } catch (error) {
-      if (error.response && error.response.data) {
-        setEditError(error.response.data.error);
-      } else {
-        console.error("Error updating user data:", error);
-      }
-    }
-  };
-
-  const handleCancelEdit = () => {
-    setShowEditModal(false);
-    setEditError(null);
-  };
-
   const handleDelete = async () => {
     const confirmDelete = window.confirm(
       "Anda yakin ingin menghapus akun ini?"
@@ -79,7 +32,7 @@ const Profile = () => {
         if (response.status === 200) {
           localStorage.removeItem("userData");
           alert("Akun berhasil dihapus.");
-          history.push("/login");
+          // Navigasi ke halaman login menggunakan NavLink
         } else {
           console.error("Gagal menghapus akun");
           alert("Terjadi kesalahan saat menghapus akun.");
@@ -126,75 +79,19 @@ const Profile = () => {
           </div>
         )}
         <div className="mt-4">
-          <div className="flex space-x-4">
-            <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center"
-              onClick={handleEdit}
-            >
-              <Pencil className="h-4 w-4 mr-2" /> Edit
-            </button>
-            <button
-              className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded flex items-center"
-              onClick={handleDelete}
-            >
-              <Trash className="h-4 w-4 mr-2" /> Hapus
-            </button>
-          </div>
+          <button
+            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded flex items-center"
+            onClick={handleDelete}
+          >
+            <Trash className="h-4 w-4 mr-2" /> Hapus
+          </button>
           <div className="flex justify-center mt-4">
+            {/* Gunakan NavLink untuk navigasi ke halaman login setelah menghapus akun */}
             <NavLink to="/login">
               <LogOut className="h-4 w-4 mr-2" />
             </NavLink>
           </div>
         </div>
-        {showEditModal && (
-          <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
-            <div className="bg-white p-8 rounded-lg shadow-md">
-              <h3 className="text-xl font-semibold mb-4">Edit Profil</h3>
-              {editError && <p className="text-red-500 mb-4">{editError}</p>}
-              <form onSubmit={handleSubmitEdit}>
-                <div className="mb-4">
-                  <label className="block text-gray-700 font-bold mb-2">
-                    Nama Pengguna
-                  </label>
-                  <input
-                    type="text"
-                    name="username"
-                    value={editData.username}
-                    onChange={handleInputChange}
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  />
-                </div>
-                <div className="mb-4">
-                  <label className="block text-gray-700 font-bold mb-2">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={editData.email}
-                    onChange={handleInputChange}
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  />
-                </div>
-                <div className="flex justify-end">
-                  <button
-                    type="button"
-                    onClick={handleCancelEdit}
-                    className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mr-2"
-                  >
-                    Batal
-                  </button>
-                  <button
-                    type="submit"
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                  >
-                    Simpan
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
