@@ -4,8 +4,9 @@ Katalog Ferrari adalah sebuah koleksi atau daftar mobil-mobil yang diproduksi ol
 
 ## Fitur
 - Pendaftaran & Verifikasi
-- Profile Akun
+- Kelola akun
 - Daftar Mobil
+- menyaring data
 - Favorite Cars
 
 ## Diagram ER
